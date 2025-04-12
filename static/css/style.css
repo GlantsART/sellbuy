@@ -1,0 +1,47 @@
+body {
+    background: rgb(255, 240, 199);
+}
+
+h1 {
+    background: rgb(66, 117, 245);
+    text-align: center;
+}
+.hero {
+    padding-top: 40px;
+    padding-bottom: 40px;
+    background: rgb(58, 104, 232);
+    background-size: cover;
+    background-position: center center;
+}
+.hero_message {
+    color: rgb(255, 240, 199);
+    font-weight: 500;
+    font-size: 48px;
+    text-align: center;
+    font-family: 'sans-serif';
+}
+
+[class="btn btn-outline-primary 1"] {
+    margin-top: 20px;
+    justify-content: center;
+}
+h2 {
+    background: rgb(66, 117, 245);
+    display: flex;
+    justify-content: center;
+}
+
+[class="col-md6 border rounded"] {
+    padding: 15px;
+    margin: 20px;
+    background: rgb(217, 227, 252);
+}
+
+[class="col-md7 border rounded"] {
+    background: rgb(197, 213, 252);
+}
+
+[class="information"] {
+    background: rgb(217, 227, 252);
+    justify-content: center;
+}
