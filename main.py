@@ -16,7 +16,7 @@ login_manager.init_app(app)
 def main():
     db_session.global_init("db/database.db")
 
-    app.run(port=8080, host='127.0.0.1')
+    app.run(port=8080, host='127.0.0.1', debug=True)
 
 
 @login_manager.user_loader
@@ -139,7 +139,7 @@ def change_offer(id):
             return redirect('/my_offers')
         else:
             abort(404)
-    return render_template('add_offers.html', title='Редактирование предложения')
+    return render_template('add_offers.html', title='Редактирование предложения', form=form)
 
 
 @app.route('/search', methods=['POST', 'GET'])
