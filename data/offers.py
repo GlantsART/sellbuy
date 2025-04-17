@@ -13,7 +13,7 @@ class Offers(SqlAlchemyBase):
     name_offer = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     discription = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     price = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
-    is_sold = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+    is_sold = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     created_date = sqlalchemy.Column(sqlalchemy.DateTime,
                                      default=datetime.datetime.now)
     topic = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)

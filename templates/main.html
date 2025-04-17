@@ -6,7 +6,31 @@
         <div class="hero_message">Главная страница</div>
     </div>
 </section>
-<div>
-    <a class="btn btn-outline-primary 1" href="/all_offers">Все предложения</a>
+<div class="col-md6 border rounded">
+    <a class="btn btn-outline-primary 1" href="/search">Поиск</a>
+    {% if current_user.is_authenticated %}
+        <a class="btn btn-outline-primary 1" href="/my_offers">Мои предложения</a>
+        <a class="btn btn-outline-primary 1" href="/add_offer">Новое предложение</a>
+    {% else %}
+        <a class="btn btn-outline-primary 1" href="/login">Мои предложения</a>
+        <a class="btn btn-outline-primary 1" href="/login">Новое предложение</a>
+    {% endif %}
 </div>
+<br><br><br><br>
+{% for item in offers%}
+<div class="col-md6 border rounded">
+    <h2>{{item.name_offer}}</h2>
+    <h4>Цена - {{item.price}}</h4>
+    <div>
+        Описание: {{item.discription}}
+    </div>
+    <div class="col-md7 border rounded">
+        •Продавец: {{item.user.name}} {{item.user.surname}}<br>
+        •Город: {{item.place}} <br>
+        •Как cвязаться: <br>
+        +{{item.user.number}}<br>
+        {{item.user.email}}
+    </div>
+</div>
+{% endfor %}
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Предложения</h1>
+{% for item in offers %}
+<div class="col-md6 border rounded">
+    <h2>{{item.name_offer}}</h2>
+    <h4>Цена - {{item.price}}</h4>
+    <div>
+        Описание: {{item.discription}}
+    </div>
+    <div class="col-md7 border rounded">
+        •Продавец: {{item.user.name}} {{item.user.surname}}<br>
+        •Город: {{item.place}} <br>
+        •Как cвязаться: <br>
+        +{{item.user.number}}<br>
+        {{item.user.email}}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

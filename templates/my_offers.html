@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for item in offers%}
+<div class="col-md6 border rounded">
+    <h2>{{item.name_offer}}</h2>
+    <h4>Цена - {{item.price}}</h4>
+    <div>
+        Описание: {{item.discription}}
+    </div>
+    {% if item.is_sold == 0 %}
+        Состояние - не продано
+        {% if current_user.is_authenticated and current_user == item.user %}
+        <div>
+            <a href="/change_offers/{{ item.id }}" class="btn btn-outline-primary">
+                Изменить
+            </a>
+            <a href="/offer_delete/{{ item.id }}" class="btn btn-outline-primary">
+                Удалить
+            </a>
+            <a href="/offer_sold/{{ item.id }}" class="btn btn-outline-primary">
+                Продано
+            </a>
+        </div>
+        {% endif %}
+    {% elif item.is_sold == 1 %}
+        Состояние - продано<br>
+        <a href="/offer_not_sold/{{ item.id }}" class="btn btn-outline-primary">
+            Не продано
+        </a>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}
