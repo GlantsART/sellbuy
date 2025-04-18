@@ -1,9 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h1>Поиск предложений</h1>
 <div>
     <form method="post" class="search_form">
-        <input type="text" placeholder="Поиск по названию" name="text_area">
+        <input type="text" placeholder="Поиск по названию" name="text_area"><br>
+        <br>
+        По категории
+        <select class="form-select" aria-label="Default select example" name="topic">
+            <option selected>Нет</option>
+            {% for i in range(12) %}
+                <option value="{{ topics_name[i] }}" name="topic{{ i }}">{{ topics_name[i] }}</option>
+            {% endfor %}
+        </select><br><br>
+        Город/населенный пункт
+        <select class="form-select" aria-label="Default select example" name="place">
+            <option selected>Нет</option>
+            {% for i in range(cplaces) %}
+                <option value="{{ place_list[i] }}" name="place{{ i }}">{{ place_list[i] }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="tentacles" class="form-label_price">Цена</label><br>
+        <input type="number" class="form-range_price" min="0" max="999999998" id="tentacles" name="min_price" placeholder="минимальная цена" value="0"/>
+        <input type="number" class="form-range_price" min="min_price.max" max="999999999" id="tentacles" name="max_price" placeholder="максимальная цена" value="999999999"/>
+
         <button type="submit" class="btn btn-primary">Поиск</button>
     </form>
 </div>

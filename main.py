@@ -28,7 +28,7 @@ def load_user(user_id):
 @app.route('/main')
 def main_page():
     db_sess = db_session.create_session()
-    all_offers = list(set(db_sess.query(Offers).filter(Offers.is_sold == 0)))
+    all_offers = list(set(db_sess.query(Offers).filter(Offers.is_sold == 0, Offers.user != current_user)))
     return render_template('main.html', title='Главная страница', offers=all_offers)
 
 
@@ -95,71 +95,130 @@ def my_offers_page():
 
 @app.route('/add_offer', methods=['GET', 'POST'])
 def add_offer():
+    topics_name = ['животные', 'электроника', 'транспорт', 'еда', 'для дома', 'аксессуары', 'услуги',
+                   'запчасти',
+                   'одежда', 'недвижимость', 'Книги', 'Спорт товары']
     form = OfferForm()
-    if form.validate_on_submit():
+    if request.method == 'POST':
         db_sess = db_session.create_session()
+        topics = []
+        for i in range(12):
+            try:
+                topics.append(request.form[f'accept{i}'])
+            except:
+                continue
         offers = Offers()
-        offers.name_offer = form.name_offer.data
-        offers.discription = form.discription.data
-        offers.price = form.price.data
-        offers.topic = form.topic.data
-        offers.place = form.place.data
+        offers.name_offer = request.form['name']
+        offers.discription = request.form['about']
+        offers.price = request.form['price']
+        offers.topic = ', '.join(topics)
+        offers.place = request.form['place']
         current_user.offers.append(offers)
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/my_offers')
-    return render_template('add_offers.html', title='Добавление предложения', form=form)
+    return render_template('add_offer.html', title='Добавление предложения', topics_name=topics_name)
 
 
 @app.route('/change_offers/<int:id>', methods=['GET', 'POST'])
 @login_required
 def change_offer(id):
-    form = OfferForm()
+    topics_name = ['животные', 'электроника', 'транспорт', 'еда', 'для дома', 'аксессуары', 'услуги',
+                   'запчасти',
+                   'одежда', 'недвижимость', 'Книги', 'Спорт товары']
     if request.method == "GET":
         db_sess = db_session.create_session()
         offers = db_sess.query(Offers).filter(Offers.id == id, Offers.user == current_user).first()
         if offers:
-            form.name_offer.data = offers.name_offer
-            form.discription.data = offers.discription
-            form.price.data = offers.price
-            form.topic.data = offers.topic
-            form.place.data = offers.place
+            offer_name = offers.name_offer
+            discription = offers.discription
+            price = offers.price
+            topic = offers.topic.split(', ')
+            place = offers.place
+            return render_template('add_offer.html', title='Редактирование предложения', name_offer=offer_name,
+                                   discription=discription, price=price, topic=topic, place=place,
+                                   topics_name=topics_name)
         else:
             abort(404)
-    if form.validate_on_submit():
+    if request.method == 'POST':
         db_sess = db_session.create_session()
         offers = db_sess.query(Offers).filter(Offers.id == id, Offers.user == current_user).first()
         if offers:
-            offers.name_offer = form.name_offer.data
-            offers.discription = form.discription.data
-            offers.price = form.price.data
-            offers.topic = form.topic.data
-            offers.place = form.place.data
+            topics = []
+            for i in range(12):
+                try:
+                    topics.append(request.form[f'accept{i}'])
+                except:
+                    continue
+            offers.name_offer = request.form['name']
+            offers.discription = request.form['about']
+            offers.price = request.form['price']
+            offers.topic = ', '.join(topics)
+            offers.place = request.form['place']
             db_sess.commit()
             return redirect('/my_offers')
         else:
             abort(404)
-    return render_template('add_offers.html', title='Редактирование предложения', form=form)
 
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
+    topics_name = ['животные', 'электроника', 'транспорт', 'еда', 'для дома', 'аксессуары', 'услуги',
+                   'запчасти',
+                   'одежда', 'недвижимость', 'книги', 'спорт товары']
     if request.method == 'GET':
         db_sess = db_session.create_session()
-        topics = list(set(db_sess.query(Offers.topic).filter(Offers.is_sold == 0)))
-        return render_template('search.html', title='Поиск предложений', topics=topics)
+        places = [str(str(elem)[2:-3]) for elem in set(db_sess.query(Offers.place).filter(Offers.is_sold == 0))]
+        return render_template('search.html', title='Поиск предложений', topics_name=topics_name, place_list=places,
+                               cplaces=len(places))
     elif request.method == 'POST':
         search_name = request.form['text_area']
+        topics = request.form['topic']
+        placea = request.form['place']
+        min_price = int(request.form['min_price'])
+        max_price = int(request.form['max_price'])
+        db_sess = db_session.create_session()
+        offers = list(db_sess.query(Offers).filter(Offers.is_sold == 0, Offers.user != current_user))
+        print(offers)
         if search_name != '':
-            db_sess = db_session.create_session()
-            offers = list(db_sess.query(Offers).filter(Offers.name_offer.contains(search_name)), Offers.is_sold == 0)
-            print()
-            if offers:
-                return render_template('searched_offers.html', title='Отобранные предложения', offers=offers)
-            else:
-                return render_template('no_offers.html', title='Отобранные предложения')
+            print('search_name', offers)
+            new_offers = []
+            for item in offers:
+                if search_name.lower() in item.name_offer.lower():
+                    new_offers.append(item)
+            offers = new_offers.copy()
+            new_offers.clear()
+        if topics != 'Нет':
+            print('topics', offers)
+            new_offers = []
+            for item in offers:
+                if topics in item.topic:
+                    new_offers.append(item)
+            offers = new_offers.copy()
+            new_offers.clear()
+        if placea != 'Нет':
+            print('placea', offers)
+            new_offers = []
+            for item in offers:
+                if placea in item.place:
+                    new_offers.append(item)
+            offers = new_offers.copy()
+            new_offers.clear()
+        print('price', offers)
+        new_offers = []
+        for item in offers:
+            if min_price <= int(item.price) <= max_price:
+                new_offers.append(item)
+            offers = new_offers.copy()
+
+        if offers:
+            print(offers)
+            return render_template('searched_offers.html', title='Предложения', offers=offers, text='Предложения')
         else:
-            return render_template('no_offers.html', title='Отобранные предложения')
+            return render_template('no_offers.html', title='Предложения')
+
+
+
 
 
 @app.route('/offer_delete/<int:id>', methods=['GET', 'POST'])
@@ -173,6 +232,30 @@ def offer_delete(id):
     else:
         abort(404)
     return redirect('/my_offers')
+
+
+@app.route('/add_basket/<int:id>', methods=['GET', 'POST'])
+@login_required
+def offer_basket(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    if user and id not in [int(i) for i in user.basket.split()]:
+        user.basket += str(id) + ' '
+        db_sess.commit()
+    return redirect('/main')
+
+
+@app.route('/basket', methods=['GET', 'POST'])
+@login_required
+def basket():
+    db_sess = db_session.create_session()
+    offers_id = [int(i) for i in current_user.basket.split()]
+    offers = db_sess.query(Offers).all()
+    offers_basket = []
+    for item in offers:
+        if item.id in offers_id:
+            offers_basket.append(item)
+    return render_template('/searched_offers.html', title='Корзина', offers=offers_basket, text='Корзина')
 
 
 @app.route('/offer_sold/<int:id>', methods=['GET', 'POST'])

@@ -17,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin):
                               index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     number = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
+    basket = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     offers = orm.relationship("Offers", back_populates='user')
 
     def set_password(self, password):
