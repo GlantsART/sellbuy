@@ -19,4 +19,5 @@ class Offers(SqlAlchemyBase):
     topic = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     place = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    photo = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     user = orm.relationship('User')

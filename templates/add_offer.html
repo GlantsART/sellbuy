@@ -3,31 +3,38 @@
 {% block content %}
 <h1>Предложения</h1>
 <div class="add_form">
-    <form class="add_form" method="post">
-        <input class="form-control" type="text" placeholder="Название" aria-label="default input example" name="name" value="{{ name_offer }}">
+    <form class="add_form" method="post" enctype="multipart/form-data">
+        <input class="form-control" type="text" placeholder="Название" aria-label="default input example" name="name"
+               value="{{ name_offer }}">
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">Описание</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="about">{{ discription }}</textarea>
+            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                      name="about">{{ discription }}</textarea>
         </div>
 
         <label for="tentacles" class="form-label_price">Цена</label><br>
-        <input type="number" class="form-range_price" min="0" max="1000000000" id="tentacles" name="price" value="{{ price }}" /><br><br>
+        <input type="number" class="form-range_price" min="0" max="1000000000" id="tentacles" name="price"
+               value="{{ price }}"/><br><br>
 
         <input class="form-control" type="text" placeholder="Город/населенный пункт" aria-label="default input example"
                name="place" value="{{ place }}"><br>
         <label>Категории</label>
         <div class="form-group form-check">
             {% for i in range(12) %}
-                {% if topics_name[i] in topic %}
-                    <input type="checkbox" class="form-check-input" id="acceptRules" name="accept{{ i }}"
-                        value='{{ topics_name[i] }}' checked>
-                {% else %}
-                    <input type="checkbox" class="form-check-input" id="acceptRules" name="accept{{ i }}"
-                        value='{{ topics_name[i] }}'>
-                {% endif %}
-                    <label class="form-check-label" for="acceptRules">{{ topics_name[i] }}</label>
-                    <br>
+            {% if topics_name[i] in topic %}
+            <input type="checkbox" class="form-check-input" id="acceptRules" name="accept{{ i }}"
+                   value='{{ topics_name[i] }}' checked>
+            {% else %}
+            <input type="checkbox" class="form-check-input" id="acceptRules" name="accept{{ i }}"
+                   value='{{ topics_name[i] }}'>
+            {% endif %}
+            <label class="form-check-label" for="acceptRules">{{ topics_name[i] }}</label>
+            <br>
             {% endfor %}
+        </div>
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Default file input example</label>
+            <input class="form-control" type="file" id="formFile" name="file">
         </div>
         <button type="submit" class="btn btn-primary">Добавить</button>
     </form>

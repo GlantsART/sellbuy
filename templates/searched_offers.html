@@ -3,24 +3,28 @@
 {% block content %}
 <h1>{{ text }}</h1>
 {% for item in offers %}
-    <div class="col-md6 border rounded">
+    <div class="bordered">
         <h2>{{item.name_offer}}</h2>
         <h4>Цена - {{item.price}}</h4>
         <div>
             Описание: {{item.discription}}
         </div>
-        <div class="col-md7 border rounded">
+        <div class="bordered1">
             •Продавец: {{item.user.name}} {{item.user.surname}}<br>
             •Город: {{item.place}} <br>
             •Как cвязаться: <br>
             +{{item.user.number}}<br>
             {{item.user.email}}
         </div>
-        {% if current_user.is_authenticated and current_user != item.user %}
+        {% if current_user.is_authenticated and current_user != item.user and text != 'Корзина' %}
         <div>
             <a href="add_basket/{{ item.id }}" class="btn btn-outline-primary">Добавить в корзину</a>
         </div>
-    {% endif %}
+        {% elif text == 'Корзина' %}
+        <div>
+            <a href="delete_basket/{{ item.id }}" class="btn btn-outline-primary">Удалить из корзины</a>
+        </div>
+        {% endif %}
     </div>
 {% endfor %}
 {% endblock %}

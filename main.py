@@ -1,11 +1,12 @@
-from flask import Flask, redirect, render_template, request, abort
+from flask import Flask, redirect, render_template, request, abort, url_for
 from data import db_session
 from data.users import User
 from data.offers import Offers
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from form.login_form import LoginForm
 from form.user import RegisterForm
-from form.OffersForm import OfferForm
+from PIL import Image
+import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ArTem_GlaNTs2008'
@@ -28,7 +29,7 @@ def load_user(user_id):
 @app.route('/main')
 def main_page():
     db_sess = db_session.create_session()
-    all_offers = list(set(db_sess.query(Offers).filter(Offers.is_sold == 0, Offers.user != current_user)))
+    all_offers = list(set(db_sess.query(Offers).filter(Offers.is_sold == 0)))
     return render_template('main.html', title='Главная страница', offers=all_offers)
 
 
@@ -54,6 +55,7 @@ def reqister():
         user.set_password(form.password.data)
         db_sess.add(user)
         db_sess.commit()
+        os.mkdir(f'static/img/{user.id}')
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form)
 
@@ -64,7 +66,6 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = db_sess.query(User).filter(User.email == form.email.data).first()
-        print('#########', user)
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect('/main')
@@ -98,9 +99,9 @@ def add_offer():
     topics_name = ['животные', 'электроника', 'транспорт', 'еда', 'для дома', 'аксессуары', 'услуги',
                    'запчасти',
                    'одежда', 'недвижимость', 'Книги', 'Спорт товары']
-    form = OfferForm()
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
     if request.method == 'POST':
-        db_sess = db_session.create_session()
         topics = []
         for i in range(12):
             try:
@@ -113,11 +114,25 @@ def add_offer():
         offers.price = request.form['price']
         offers.topic = ', '.join(topics)
         offers.place = request.form['place']
+
+        file = request.files['file']
+        file_name = file.filename
+        file.save(f'static/img/{user.id}/{file_name}')
+        file = Image.open(f'static/img/{user.id}/{file_name}')
+        file = file.resize((200, 200))
+        file.save(f'static/img/{user.id}/{file_name}')
+        offers.photo = f'static/img/{user.id}/{file_name}'
+
         current_user.offers.append(offers)
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/my_offers')
     return render_template('add_offer.html', title='Добавление предложения', topics_name=topics_name)
+
+
+@app.route('/torfin')
+def torfin():
+    return f'''<img src="{url_for('static', filename='img/torfin.png')}" alt="Картинки нет">'''
 
 
 @app.route('/change_offers/<int:id>', methods=['GET', 'POST'])
@@ -179,9 +194,7 @@ def search():
         max_price = int(request.form['max_price'])
         db_sess = db_session.create_session()
         offers = list(db_sess.query(Offers).filter(Offers.is_sold == 0, Offers.user != current_user))
-        print(offers)
         if search_name != '':
-            print('search_name', offers)
             new_offers = []
             for item in offers:
                 if search_name.lower() in item.name_offer.lower():
@@ -189,7 +202,6 @@ def search():
             offers = new_offers.copy()
             new_offers.clear()
         if topics != 'Нет':
-            print('topics', offers)
             new_offers = []
             for item in offers:
                 if topics in item.topic:
@@ -197,14 +209,12 @@ def search():
             offers = new_offers.copy()
             new_offers.clear()
         if placea != 'Нет':
-            print('placea', offers)
             new_offers = []
             for item in offers:
                 if placea in item.place:
                     new_offers.append(item)
             offers = new_offers.copy()
             new_offers.clear()
-        print('price', offers)
         new_offers = []
         for item in offers:
             if min_price <= int(item.price) <= max_price:
@@ -212,7 +222,6 @@ def search():
             offers = new_offers.copy()
 
         if offers:
-            print(offers)
             return render_template('searched_offers.html', title='Предложения', offers=offers, text='Предложения')
         else:
             return render_template('no_offers.html', title='Предложения')
@@ -232,6 +241,18 @@ def offer_delete(id):
     else:
         abort(404)
     return redirect('/my_offers')
+
+
+@app.route('/delete_basket/<int:id>', methods=['GET', 'POST'])
+@login_required
+def delete_basket(id):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    lst = user.basket.split()
+    lst.remove(str(id))
+    user.basket = ' '.join(lst)
+    db_sess.commit()
+    return redirect('/basket')
 
 
 @app.route('/add_basket/<int:id>', methods=['GET', 'POST'])
