@@ -5,6 +5,7 @@
 {% for item in offers %}
     <div class="bordered">
         <h2>{{item.name_offer}}</h2>
+        <a class="photo"><img src="{{ item.photo }}"></a>
         <h4>Цена - {{item.price}}</h4>
         <div>
             Описание: {{item.discription}}

@@ -2,14 +2,16 @@
 
 {% block content %}
 {% for item in offers%}
+<h1>Мои предложения</h1>
 <div class="bordered">
     <h2>{{item.name_offer}}</h2>
+    <a class="photo"><img src="{{ item.photo }}"></a>
     <h4>Цена - {{item.price}}</h4>
-    <div>
+    <div class="bordered1" style="display: block">
         Описание: {{item.discription}}
     </div>
     {% if item.is_sold == 0 %}
-        Состояние - не продано
+        <h5>Состояние - не продано</h5>
         {% if current_user.is_authenticated and current_user == item.user %}
         <div>
             <a href="/change_offers/{{ item.id }}" class="btn btn-outline-primary">
@@ -24,7 +26,7 @@
         </div>
         {% endif %}
     {% elif item.is_sold == 1 %}
-        Состояние - продано<br>
+        <h5>Состояние - продано</h5><br>
         <a href="/offer_not_sold/{{ item.id }}" class="btn btn-outline-primary">
             Не продано
         </a>

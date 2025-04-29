@@ -3,7 +3,7 @@
 {% block content %}
 <section class="hero">
     <div class="conteiner">
-        <div class="hero_message">Главная страница</div>
+        <div class="hero_message">SellBuy</div>
     </div>
 </section>
 <div class="bordered">
@@ -22,6 +22,7 @@
 {% for item in offers%}
 <div class="bordered">
     <h2>{{item.name_offer}}</h2>
+    <a class="photo"><img src="{{ item.photo }}"></a>
     <h4>Цена - {{item.price}}</h4>
     <div class="value">
         <h5>Описание: {{item.discription}}</h5>

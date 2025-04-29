@@ -11,6 +11,9 @@
     <title>{{ title }}</title>
 </head>
 <body>
+<div class="main_page_button">
+    <a class="btn btn-outline-primary" href="/main"><img src="static\img\images/logo3.png" width="200px" height="100px"></a>
+</div>
 {% if current_user.is_authenticated %}
     <a class="navbar-brand" href="/logout">{{ current_user.name }} {{current_user.surname}}</a> <br>
     <a class="navbar-brand" href="/logout">{{ current_user.email }} </a>
@@ -21,10 +24,6 @@
         <a class="btn btn-outline-primary" href="/login">Войти</a>
     </p>
 {% endif %}
-<div class="main_page_button">
-    <a class="btn btn-outline-primary" href="/main">На главную</a>
-    <a class="btn btn-outline-primary" href="/about">О нас</a>
-</div>
 <main role="main" class="container">
     {% block content %}{% endblock %}
 </main>

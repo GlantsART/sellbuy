@@ -7,6 +7,7 @@ from form.login_form import LoginForm
 from form.user import RegisterForm
 from PIL import Image
 import os
+from sqlalchemy import orm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'ArTem_GlaNTs2008'
@@ -128,11 +129,6 @@ def add_offer():
         db_sess.commit()
         return redirect('/my_offers')
     return render_template('add_offer.html', title='Добавление предложения', topics_name=topics_name)
-
-
-@app.route('/torfin')
-def torfin():
-    return f'''<img src="{url_for('static', filename='img/torfin.png')}" alt="Картинки нет">'''
 
 
 @app.route('/change_offers/<int:id>', methods=['GET', 'POST'])
@@ -260,7 +256,10 @@ def delete_basket(id):
 def offer_basket(id):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == current_user.id).first()
-    if user and id not in [int(i) for i in user.basket.split()]:
+    if user and user.basket == '':
+        user.basket = str(id) + ' '
+        db_sess.commit()
+    elif user and id not in [int(i) for i in user.basket.split()]:
         user.basket += str(id) + ' '
         db_sess.commit()
     return redirect('/main')

@@ -2,7 +2,8 @@
 
 {% block content %}
 <h1>Регистрация</h1>
-<form action="" method="post" class="reglog">
+<div class="reglog">
+<form action="" method="post">
     {{ form.hidden_tag() }}
 
     <p>
@@ -68,4 +69,5 @@
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
     {{message}}
 </form>
+</div>
 {% endblock %}
